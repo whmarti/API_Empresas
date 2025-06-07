@@ -18,6 +18,7 @@ services:
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
+    #container_name: sqlserver  Le puedo definir el nombre asi, o me lo ira incrementando con cada conexion simultanea:sqlserver-1
     environment:
       SA_PASSWORD: "Your_strong_password123!"
       ACCEPT_EULA: "Y"
@@ -27,6 +28,15 @@ services:
       - D:/Temp/SqlData/data:/var/opt/mssql/data
       - D:/Temp/SqlData/log:/var/opt/mssql/log
       - D:/Temp/SqlData/secrets:/var/opt/mssql/secrets 
+    
+    command:
+      - "/bin/sh"
+      - "-c"
+      - |
+        # Ajustamos permisos y luego iniciamos SQL Server
+        chown -R mssql:mssql /var/opt/mssql
+        chmod -R 777 /var/opt/mssql
+        /opt/mssql/bin/sqlservr
     healthcheck:           # evita que tu API intente conectar antes de tiempo
       test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-U", "sa",
             "-P", "Your_strong_password123!", "-Q", "SELECT 1" ]
