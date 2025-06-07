@@ -1,0 +1,30 @@
+{
+  "name": "API Dev Container",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "api",
+  "workspaceFolder": "/workspace/ApiEmpresasProductos",
+  "containerEnv": {
+    "NUGET_PACKAGES": "/workspace/.nuget"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "omnisharp.useModernNet": true,
+        "omnisharp.waitForDebugger": true,
+        "omnisharp.projectLoadTimeout": 60,
+        "omnisharp.enableRoslynAnalyzers": true,
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  "remoteUser": "root",
+  "postCreateCommand": "dotnet restore /workspace/ApiEmpresasProductos/ApiEmpresasProductos.csproj",
+  "postStartCommand": "dotnet tool restore && dotnet restore /workspace/ApiEmpresasProductos/ApiEmpresasProductos.csproj && dotnet build /workspace/ApiEmpresasProductos/ApiEmpresasProductos.csproj && dotnet ef database update --project /workspace/ApiEmpresasProductos/ApiEmpresasProductos.csproj",
+  "mounts": [
+    "source=${localWorkspaceFolder}/NuGet.Config,target=/root/.nuget/NuGet/NuGet.Config,type=bind,consistency=cached"
+  ]
+}

@@ -1,0 +1,45 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile.api
+    volumes:
+      - D:/Temp/ApiEmpresasProductos:/workspace:cached      
+      - D:/Temp/NugetCache:/root/.nuget/packages
+    depends_on:
+      - sqlserver
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000
+    ports:
+      - "5000:5000"
+    networks:
+      - app-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "Your_strong_password123!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - 14310:1433
+    volumes:
+      - D:/Temp/SqlData/data:/var/opt/mssql/data
+      - D:/Temp/SqlData/log:/var/opt/mssql/log
+      - D:/Temp/SqlData/secrets:/var/opt/mssql/secrets 
+    healthcheck:           # evita que tu API intente conectar antes de tiempo
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-U", "sa",
+            "-P", "Your_strong_password123!", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+    networks:
+      - app-network
+
+volumes:
+  nuget_cache:
+
+networks:
+  app-network:
+    driver: bridge

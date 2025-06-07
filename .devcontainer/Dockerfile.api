@@ -1,0 +1,20 @@
+# Dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+
+# Instala EF Tools globalmente
+RUN dotnet tool install --global dotnet-ef
+
+# Agrega herramientas al PATH
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Crea directorio de trabajo
+WORKDIR /workspace/ApiEmpresasProductos
+
+# Copia solo los archivos del proyecto y restaura
+COPY ApiEmpresasProductos/ApiEmpresasProductos.csproj ./
+RUN dotnet restore
+
+# Luego copia todo (para evitar re-restaurar cada vez)
+COPY ApiEmpresasProductos/. ./
+
+CMD ["sleep", "infinity"]
